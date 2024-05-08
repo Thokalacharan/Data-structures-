@@ -1,4 +1,4 @@
-/*C Program that implements operations on Doubly Linked List*/
+/*C Program to perform operations on Doubly Linked List*/
 #include <stdio.h>
 #include <stdlib.h>
 struct node
@@ -9,12 +9,12 @@ struct node
 };
 typedef struct node NODE;
 void create();
-void insert_front(int);
-void insert_last(int);
-void insert_pos(int,int);
-void delete_front();
-void delete_last();
-void delete_pos();
+void insertfront(int);
+void insertlast(int);
+void insertpos(int,int);
+void deletefront();
+void deletelast();
+void deletepos();
 void traversalLtoR();
 void traversalRtoL();
 NODE *head = NULL;
@@ -25,46 +25,38 @@ int main()
     while(1)
     {
         printf("\nMENU\n");
-        printf("1. Insert front\n");
-        printf("2. Insert Last\n");
-        printf("3. Insert at the specified Position\n");
-        printf("4. Delete front\n");
-        printf("5. Delete Last\n");
-        printf("6. Delete at the specified position\n");
-        printf("7. Traversal (left to right)\n");
-        printf("8. Traversal (right to left\n");
-        printf("9. Exit\n");
+        printf("1.Insert front\n2.Insert Last\n3.Insert at the specified Position\n4.Delete front\n5.Delete Last\n6.Delete at the specified position\n7.Traversal (left to right)\n8.Traversal (right to left\n9.Exit\n");
         printf("Enter your choice:");
         scanf("%d",&choice);
         switch(choice)
         {
         case 1:
-            printf("Enter the element to be inserted");
+            printf("Enter the element to be inserted:");
             scanf("%d",&item);
-            insert_front(item);
+            insertfront(item);
             break;
         case 2:
-            printf("Enter the element to be inserted");
+            printf("Enter the element to be inserted:");
             scanf("%d",&item);
-            insert_last(item);
+            insertlast(item);
             break;
         case 3:
-            printf("Enter the element");
+            printf("Enter the element:");
             scanf("%d",&item);
-            printf("Enter the position");
+            printf("Enter the position:");
             scanf("%d",&pos);
-            insert_pos(item,pos);
+            insertpos(item,pos);
             break;
         case 4:
-            delete_front();
+            deletefront();
             break;
         case 5:
-            delete_last();
+            deletelast();
             break;
         case 6:
-            printf("Enter the pos");
+            printf("Enter the pos:");
             scanf("%d",&pos);
-            delete_pos(pos);
+            deletepos(pos);
             break;
         case 7:
             traversalLtoR();
@@ -82,11 +74,10 @@ int main()
 void create()
 {
     NODE *cur, *temp;
-    char ch;
-    int item;
+    int item, ch;
     do
     {
-        printf("Enter the element:\n");
+        printf("Enter the element:");
         scanf("%d",&item);
         temp = (NODE *)malloc(sizeof(NODE));
         temp->data = item;
@@ -100,14 +91,13 @@ void create()
             temp->prev = cur;
             cur = temp;
         }
-        printf("Do you want to continue(y/n):");
-        fflush(stdin);
-        ch = getchar();
-    } while(ch=='y' || ch=='Y');
+        printf("Press 1 to continue:");
+        scanf("%d",&ch);
+    } while(ch==1);
     head->prev = NULL;
     cur->next = NULL;
 }
-void insert_front(int item)
+void insertfront(int item)
 {
     NODE* temp;
     temp = (NODE *)malloc(sizeof(NODE));
@@ -117,7 +107,7 @@ void insert_front(int item)
     head->prev = temp;
     head = temp;
 }
-void insert_last(int item)
+void insertlast(int item)
 {
     NODE *temp, *cur;
     temp = (NODE *)malloc(sizeof(NODE));
@@ -139,7 +129,36 @@ void insert_last(int item)
     }
     temp->next = NULL;
 }
-void delete_front()
+void insertpos(int item,int pos)
+{
+    int i;
+    NODE *cur1=head, *cur2, *temp;
+    if(pos==1)
+        insertfront(item);
+    else
+    {
+        for(i=1; i<=(pos-2) && cur1!=NULL; i++)
+            cur1=cur1->next;
+        if(cur1==NULL)
+            printf("Invalid Position\n");
+        else
+        {
+            cur2 = cur1->next;
+            if(cur2==NULL)
+                insertlast(item);
+            else
+            {
+                temp = (NODE*)malloc(sizeof(NODE));
+                temp->data = item;
+                temp->next = cur2;
+                cur2->prev = temp;
+                cur1->next = temp;
+                temp->prev = cur1;
+            }
+        }
+    }
+}
+void deletefront()
 {
     NODE *temp;
     if(head==NULL) printf("List is empty\n");
@@ -152,7 +171,7 @@ void delete_front()
         free(temp);
     }
 }
-void delete_last()
+void deletelast()
 {
     NODE *temp, *cur;
     if(head==NULL) printf("List is empty\n");
@@ -174,47 +193,31 @@ void delete_last()
         free(temp);
     }
 }
-void insert_pos(int item,int pos)
+void deletepos(int pos)
 {
     int i;
     NODE *cur1=head, *cur2, *temp;
-    if(pos==1) insert_front(item);
+    if(pos==1)
+        deletefront();
     else
     {
-        for(i=1; i<=(pos-2); i++)
+        for(i=1; i<=(pos-2) && cur1->next!=NULL; i++)
             cur1=cur1->next;
-        if(cur1==NULL)
+        if(cur1->next == NULL)
             printf("Invalid Position\n");
-        else
-        {
-            cur2 = cur1->next;
-            temp = (NODE*)malloc(sizeof(NODE));
-            temp->data = item;
-            temp->next = cur2;
-            cur2->prev = temp;
-            cur1->next = temp;
-            temp->prev = cur1;
-        }
-    }
-}
-void delete_pos(int pos)
-{
-    int i;
-    NODE *cur1=head, *cur2, *temp;
-    if(pos==1) delete_front();
-    else
-    {
-        for(i=1; i<=(pos-2); i++)
-            cur1=cur1->next;
-        if(cur1->next == NULL) printf("Invalid Position\n");
         else
         {
             temp = cur1->next;
             cur2 = temp->next;
-            cur1->next = cur2;
-            cur2->prev = cur1;
-            printf("Deleted element: %d\n",temp->data);
-            free(temp);
+            if(cur2==NULL)
+                deletelast();
+            else
+            {
+                cur1->next = cur2;
+                cur2->prev = cur1;
+                printf("Deleted element: %d\n",temp->data);
+                free(temp);
+            }
         }
     }
 }
@@ -241,9 +244,7 @@ void traversalRtoL()
     else
     {
         while(cur->next!=NULL)
-        {
             cur=cur->next;
-        }
         while(cur!=NULL)
         {
             printf("%4d",cur->data);
@@ -266,3 +267,5 @@ void display()
         }
     }
 }
+
+   
